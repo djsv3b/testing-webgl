@@ -11,9 +11,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background: #000;
       }
-      /* The canvas will scale to fill the container while the internal resolution stays fixed */
       #unity-canvas {
         width: 100%;
         height: 100%;
@@ -23,12 +21,19 @@
     </style>
   </head>
   <body>
-    <!-- Set the intrinsic resolution via attributes -->
-    <canvas id="unity-canvas" width="1280" height="720" tabindex="-1"></canvas>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
     <script src="Build/webgl.loader.js"></script>
     <script>
-      // No need to adjust the canvas size on resize – we want to lock the internal resolution.
-      // Instead, the CSS will scale the canvas up to fill the viewport.
+      // If on mobile, we already set the canvas style accordingly.
+      // For desktop, update the internal resolution with a resize listener:
+      function resizeCanvas() {
+        var canvas = document.getElementById("unity-canvas");
+        // Update the internal resolution to match the CSS size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
 
       createUnityInstance(document.getElementById("unity-canvas"), {
         dataUrl: "Build/webgl.data",
@@ -38,8 +43,7 @@
         companyName: "Cogmuse",
         productName: "BrainGames2",
         productVersion: "2.0.3",
-        // Disable matching the render resolution to the canvas’s CSS size.
-        matchWebGLToCanvasSize: false,
+        matchWebGLToCanvasSize: true, // Let Unity auto-adjust the render buffer to match the canvas size
       }).then(function(unityInstance) {
         console.log("Unity instance created.");
       }).catch(function(message) {
